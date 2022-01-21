@@ -1,0 +1,2 @@
+# LhaZero
+LHA DLL
