@@ -1,0 +1,52 @@
+#
+# LHA Makefile for Windows 95/98/Me		1997.04.08 N. Koganemaru
+#						2002.04.21 N. Koganemaru
+#	Compiler	Visual C++ 5.0
+#
+O=.obj
+CC=cl
+WILDARGS=setargv.obj
+PROG=lhaw.exe
+#CFLAGS=-nologo -ML -W3 -GX -O2
+CFLAGS=-nologo -ML -W1 -GA -Ox
+
+.c.obj:
+	$(CC) -c $(CFLAGS) $(DEFINE) $*.c
+
+OBJS1	= lharc$(O) lhadd$(O) lhlist$(O) lhext$(O) header$(O)
+OBJS2	= append$(O) crcio$(O) dhuf$(O) extract$(O) huf$(O) larc$(O)
+OBJS3	= maketbl$(O) maketree$(O) shuf$(O) slide$(O) util$(O)
+OBJS4	= patmatch$(O) # $(WILDARGS)
+OBJS	= $(OBJS1) $(OBJS2) $(OBJS3) $(OBJS4)
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) -Fe$@ $(OBJS) -link $(WILDARGS)
+
+append$(O): append.c lha.h lha_macro.h config.h
+crcio$(O): crcio.c lha.h lha_macro.h config.h
+dhuf$(O): dhuf.c lha.h lha_macro.h config.h
+extract$(O): extract.c lha.h lha_macro.h config.h
+header$(O): header.c lha.h lha_macro.h config.h
+huf$(O): huf.c lha.h lha_macro.h config.h
+larc$(O): larc.c lha.h lha_macro.h config.h
+lhadd$(O): lhadd.c lha.h lha_macro.h config.h
+lharc$(O): lharc.c lha.h lha_macro.h config.h
+lhdir$(O): lhdir.c lha.h lha_macro.h config.h
+lhdir$(O): lhdir.c lhdir.h config.h
+lhext$(O): lhext.c lha.h lha_macro.h config.h
+lhlist$(O): lhlist.c lha.h lha_macro.h config.h
+maketbl$(O): maketbl.c lha.h lha_macro.h config.h
+maketree$(O): maketree.c lha.h lha_macro.h config.h
+shuf$(O): shuf.c lha.h lha_macro.h config.h
+slide$(O): slide.c lha.h lha_macro.h config.h
+util$(O): util.c lha.h lha_macro.h config.h
+
+clean:
+	rem rm -f $(PROG) *.obj
+	del $(PROG)
+	del *.obj
+
+#moreclean:
+	#rm -f core *.o lha.tar lha.tar.Z *~ \#* *.orig

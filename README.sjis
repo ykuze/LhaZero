@@ -1,0 +1,16 @@
+このソースは UNIX 版 "LHa for UNIX version 1.14i Oct. 6 2000 by Tsugio Okamoto"
+のソースにを元にした Windows 版 lha のソースです。
+
+lha-114i.tar.gz にパッチを当てた後のファイルを Windows でコンパイルできる
+ように MSDOS ファイル形式に変換したものです。従って, CHANGES.euc,
+MACHINES.euc, MACHINES2.euc, PROBLEMS.euc, README.euc, config.jpn.euc,
+header.doc.euc 等のファイルも全て SJIS コードに変換されています。
+
+詳細は http://www.koganemaru.co.jp/Win32/README.win.html
+を参照してください。
+
+--
+(有)小金丸コンピュータエンジニアリングサービス (福岡県大野城市)
+	小金丸 信幸 (Nobuyuki Koganemaru)
+E-Mail: kogane@koganemaru.co.jp
+URL: http://www.koganemaru.co.jp
