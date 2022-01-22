@@ -9,11 +9,7 @@
 #include "lha.h"
 
 void
-make_table(nchar, bitlen, tablebits, table)
-	short           nchar;
-	unsigned char   bitlen[];
-	short           tablebits;
-	unsigned short  table[];
+make_table(short nchar, unsigned char bitlen[], short tablebits, unsigned short table[])
 {
 	unsigned short  count[17];	/* count of bitlen */
 	unsigned short  weight[17];	/* 0x10000ul >> bitlen */
@@ -42,7 +38,7 @@ make_table(nchar, bitlen, tablebits, table)
 		total += weight[i] * count[i];
 	}
 	if ((total & 0xffff) != 0)
-		error("make_table()", "Bad table (5)\n");
+		error("make_table()", "Bad table (5)\r\n");
 
 	/* shift data for make table. */
 	m = 16 - tablebits;

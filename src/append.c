@@ -108,9 +108,9 @@ finish_indicator2(name, msg, pcnt)
 	if (pcnt > 100)
 		pcnt = 100;	/* (^_^) */
 #ifdef NEED_INCREMENTAL_INDICATOR
-	printf("\r%s\t- %s(%d%%)\n", name,  msg, pcnt);
+	printf("\r%s\t- %s(%d%%)\r\n", name,  msg, pcnt);
 #else
-	printf("%s\n", msg);
+	printf("%s\r\n", msg);
 #endif
 	fflush(stdout);
 }
@@ -124,9 +124,9 @@ finish_indicator(name, msg)
 		return;
 
 #ifdef NEED_INCREMENTAL_INDICATOR
-	printf("\r%s\t- %s\n", name, msg);
+	printf("\r%s\t- %s\r\n", name, msg);
 #else
-	printf("%s\n", msg);
+	printf("%s\r\n", msg);
 #endif
 	fflush(stdout);
 }

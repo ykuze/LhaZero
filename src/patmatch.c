@@ -13,10 +13,10 @@
  * Returns true if string s matches pattern p.
  */
 int
-patmatch(p, s, f)
-	register char  *p;	/* pattern */
-	register char  *s;	/* string to match */
-	int             f;	/* flag for case force */
+patmatch(register char  *p, register char  *s, int f)
+//	register char  *p;	/* pattern */
+//	register char  *s;	/* string to match */
+//	int             f;	/* flag for case force */
 {
 	char            pc;	/* a single character from pattern */
 

@@ -27,19 +27,16 @@ static int my_toupper P((register int n));
 #endif /* WIN32 */
 /* ------------------------------------------------------------------------ */
 long
-copyfile(f1, f2, size, crc_flg)	/* return: size of source file */
-	FILE           *f1;
-	FILE           *f2;
-	long            size;
-	int             crc_flg;/* 0: no crc, 1: crc check, 2: extract, 3:
-				 * append */
+copyfile(FILE *f1, FILE *f2, long size, int crc_flg)	/* return: size of source file */
+//	int             crc_flg;/* 0: no crc, 1: crc check, 2: extract, 3:
+//				 * append */
 {
 	unsigned short  xsize;
 	char           *buf;
 	long            rsize = 0;
 
 	if ((buf = (char *) malloc(BUFFERSIZE)) == NULL)
-		fatal_error("virtual memory exhausted.\n");
+		fatal_error("virtual memory exhausted.\r\n");
 	crc = 0;
 	if ((crc_flg == 2 || crc_flg) && text_mode)
 		init_code_cache();
@@ -50,25 +47,25 @@ copyfile(f1, f2, size, crc_flg)	/* return: size of source file */
 			if (xsize == 0)
 				break;
 			if (ferror(f1)) {
-				fatal_error("file read error\n");
+				fatal_error("file read error\r\n");
 			}
 		}
 		else {
 			xsize = (size > BUFFERSIZE) ? BUFFERSIZE : size;
 			if (fread(buf, 1, xsize, f1) != xsize) {
-				fatal_error("file read error\n");
+				fatal_error("file read error\r\n");
 			}
 		}
 		/* write */
 		if (f2) {
 			if (crc_flg == 2 && text_mode) {
 				if (fwrite_txt(buf, xsize, f2)) {
-					fatal_error("file write error\n");
+					fatal_error("file write error\r\n");
 				}
 			}
 			else {
 				if (fwrite(buf, 1, xsize, f2) != xsize) {
-					fatal_error("file write error\n");
+					fatal_error("file write error\r\n");
 				}
 			}
 		}
@@ -138,7 +135,7 @@ convdelim(path, delim)
 
 /* ------------------------------------------------------------------------ */
 /* If TRUE, archive file name is msdos SFX file name. */
-Boolean
+_Boolean
 archive_is_msdos_sfx1(name)
 	char           *name;
 {
@@ -153,7 +150,7 @@ archive_is_msdos_sfx1(name)
 
 /* ------------------------------------------------------------------------ */
 /* skip SFX header */
-Boolean
+_Boolean
 skip_msdos_sfx1_code(fp)
 	FILE           *fp;
 {

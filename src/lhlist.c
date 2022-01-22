@@ -33,8 +33,7 @@ static void list_tailer P((void));
 /* ------------------------------------------------------------------------ */
 /* need 14 or 22 (when verbose_listing is TRUE) column spaces */
 static void
-print_size(packed_size, original_size)
-	long            packed_size, original_size;
+print_size(long packed_size, long original_size)
 {
 	if (verbose_listing)
 		printf("%7ld ", packed_size);
@@ -50,10 +49,9 @@ print_size(packed_size, original_size)
 /* ------------------------------------------------------------------------ */
 /* need 12 or 17 (when verbose_listing is TRUE) column spaces */
 static void
-print_stamp(t)
-	time_t          t;
+print_stamp(time_t t)
 {
-	static Boolean  got_now = FALSE;
+	static _Boolean  got_now = FALSE;
 	static time_t   now;
 	static unsigned int threshold;
 	static char     t_month[12 * 3 + 1] = "JanFebMarAprMayJunJulAugSepOctNovDec";
@@ -108,9 +106,9 @@ print_bar()
 		q = "";
 
 #ifdef JAPAN_DATE	/* yy/mm/dd hh:mm format */
-	printf("---------- ----------- ------- ------%s--------------%s\n", p, q);
+	printf("---------- ----------- ------- ------%s--------------%s\r\n", p, q);
 #else
-	printf("---------- ----------- ------- ------%s------------%s\n", p, q);
+	printf("---------- ----------- ------- ------%s------------%s\r\n", p, q);
 #endif
 }
 
@@ -134,9 +132,9 @@ list_header()
 	if (verbose)
 		q = "";
 
-	printf(" PERMSSN    UID  GID    %s     STAMP%s\n", p, q);
+	printf(" PERMSSN    UID  GID    %s     STAMP%s\r\n", p, q);
 #if 0
-	printf(" PERMSSN  UID GID %s   SIZE  RATIO%s %s    STAMP%s%s\n",
+	printf(" PERMSSN  UID GID %s   SIZE  RATIO%s %s    STAMP%s%s\r\n",
 	       verbose_listing ? " PACKED " : "",	/* 8,0 */
 	       verbose_listing ? "  CRC" : "",	/* 5,0 */
 	       verbose_listing ? "  " : "",	/* 2,0 */
@@ -148,8 +146,7 @@ list_header()
 
 /* ------------------------------------------------------------------------ */
 static void
-list_one(hdr)
-	register LzHeader *hdr;
+list_one(register LzHeader *hdr)
 {
 	register int    mode;
 	register char  *p;
@@ -157,7 +154,7 @@ list_one(hdr)
 	char modebits[11];
 
 	if (verbose)
-		printf("%s\n", hdr->name);
+		printf("%s\r\n", hdr->name);
 
 	strncpy(method, hdr->method, 5);
 	method[5] = '\0';
@@ -277,7 +274,7 @@ list_one(hdr)
 
 	if (verbose)
 		printf(" [%d]", hdr->header_level);
-	printf("\n");
+	printf("\r\n");
 
 }
 
@@ -302,7 +299,7 @@ list_tailer()
 	else
 		print_stamp(stbuf.st_mtime);
 
-	printf("\n");
+	printf("\r\n");
 }
 
 /* ------------------------------------------------------------------------ */

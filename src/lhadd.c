@@ -18,7 +18,7 @@ static char    *new_archive_name;
 #if WIN32
 static void add_one P((FILE *fp, FILE *nafp, LzHeader *hdr));
 static void find_update_files P((FILE *oafp));
-static void delete P((FILE *oafp, FILE *nafp));
+static void delete_ P((FILE *oafp, FILE *nafp));
 static FILE * build_temporary_file P((void));
 static void build_backup_file P((void));
 static void report_archive_name_if_different P((void));
@@ -51,7 +51,7 @@ add_one(fp, nafp, hdr)
 			strcpy(buf, hdr->name);
 			b1 = strtok(buf, "|");
 			b2 = strtok(NULL, "|");
-			printf("%s -> %s\t- Symbolic Link\n", b1, b2);
+			printf("%s -> %s\t- Symbolic Link\r\n", b1, b2);
 		}		/* if quiet .. */
 	}
 
@@ -102,7 +102,7 @@ append_it(name, oafp, nafp)
 	int             i;
 	struct stat     stbuf /*, lstbuf*/;
 
-	Boolean         directory, symlink;
+	_Boolean         directory, symlink;
 
 	if (GETSTAT(name, &stbuf) < 0) {
 		error("Cannot access", name);	/* See cleaning_files, Why? */
@@ -163,7 +163,7 @@ append_it(name, oafp, nafp)
 		    ahdr.unix_last_modified_stamp <	/* newer than archive's */
 		    hdr.unix_last_modified_stamp) {
 			if (noexec)
-				printf("ADD %s\n", name);
+				printf("ADD %s\r\n", name);
 			else
 				add_one(fp, nafp, &hdr);
 		} else {		/* cmp == 0 *//* copy old to new */
@@ -175,14 +175,14 @@ append_it(name, oafp, nafp)
 	} else {
 		if (!oafp || cmp > 0) {	/* not in archive or dropped */
 			if (noexec)
-				printf("ADD %s\n", name);
+				printf("ADD %s\r\n", name);
 			else
 				add_one(fp, nafp, &hdr);
 		}
 		else {		/* cmp == 0 */
 			/* replace */
 			if (noexec)
-				printf("REPLACE\n");
+				printf("REPLACE\r\n");
 			else
 				add_one(fp, nafp, &hdr);
 		}
@@ -241,7 +241,7 @@ find_update_files(oafp)
 
 /* ------------------------------------------------------------------------ */
 static void
-delete(oafp, nafp)
+delete_(oafp, nafp)
 	FILE           *oafp, *nafp;
 {
 	LzHeader        ahdr;
@@ -257,9 +257,9 @@ delete(oafp, nafp)
 			fseek(oafp, ahdr.packed_size, SEEK_CUR);
 			if (noexec || !quiet)
 				if (b2 != NULL)
-					printf("delete %s -> %s\n", b1, b2);
+					printf("delete %s -> %s\r\n", b1, b2);
 				else
-					printf("delete %s\n", b1);
+					printf("delete %s\r\n", b1);
 		}
 		else {		/* copy */
 			if (noexec) {
@@ -320,7 +320,7 @@ report_archive_name_if_different()
 {
 	if (!quiet && new_archive_name == new_archive_name_buffer) {
 		/* warning at old archive is SFX */
-		printf("New archive file is \"%s\"\n", new_archive_name);
+		printf("New archive file is \"%s\"\r\n", new_archive_name);
 	}
 }
 
@@ -361,7 +361,7 @@ temporary_to_new_archive_file(new_archive_size)
 	p = p ? p + 1 : new_archive_name;
 	unlink(new_archive_name);
 	if (rename(temporary_name, p) < 0) {
-		fprintf(stderr, "Can't rename temporary_name '%s'\n", new_archive_name);
+		fprintf(stderr, "Can't rename temporary_name '%s'\r\n", new_archive_name);
 		exit(1);
 	}
 }
@@ -411,28 +411,28 @@ remove_one(name)
 			warning("Cannot open directory", name);
 
 		if (noexec)
-			printf("REMOVE DIRECTORY %s\n", name);
+			printf("REMOVE DIRECTORY %s\r\n", name);
 		else if (rmdir(name) < 0)
 			warning("Cannot remove directory", name);
 		else if (verbose)
-			printf("Removed %s.\n", name);
+			printf("Removed %s.\r\n", name);
 	}
 	else if (is_regularfile(&stbuf)) {
 		if (noexec)
-			printf("REMOVE FILE %s.\n", name);
+			printf("REMOVE FILE %s.\r\n", name);
 		else if (unlink(name) < 0)
 			warning("Cannot remove", name);
 		else if (verbose)
-			printf("Removed %s.\n", name);
+			printf("Removed %s.\r\n", name);
 	}
 #ifdef S_IFLNK
 	else if (is_symlink(&stbuf)) {
 		if (noexec)
-			printf("REMOVE SYMBOLIC LINK %s.\n", name);
+			printf("REMOVE SYMBOLIC LINK %s.\r\n", name);
 		else if (unlink(name) < 0)
 			warning("Cannot remove", name);
 		else if (verbose)
-			printf("Removed %s.\n", name);
+			printf("Removed %s.\r\n", name);
 	}
 #endif
 	else {
@@ -461,7 +461,7 @@ cmd_add()
 	FILE           *oafp, *nafp;
 	int             i;
 	long            old_header;
-	Boolean         old_archive_exist;
+	_Boolean         old_archive_exist;
 	long            new_archive_size;
 
 	/* exit if no operation */
@@ -536,8 +536,8 @@ cmd_add()
 	}
 
 	/* build backup archive file */
-	if (old_archive_exist)
-		build_backup_file();
+	//if (old_archive_exist)	//kuze
+	//	build_backup_file();
 
 	report_archive_name_if_different();
 
@@ -589,7 +589,7 @@ cmd_delete()
 		nafp = build_temporary_file();
 
 	/* build new archive file */
-	delete(oafp, nafp);
+	delete_(oafp, nafp);
 	fclose(oafp);
 
 	if (!noexec) {
@@ -599,12 +599,12 @@ cmd_delete()
 	}
 
 	/* build backup archive file */
-	build_backup_file();
+	//build_backup_file();		//kuze
 
 	/* 1999.5.24 t.oka */
 	if(!noexec && new_archive_size <= 1){
 		unlink(temporary_name);
-		printf("New archive file \"%s\" is not created because it would be empty.\n", new_archive_name);
+		printf("New archive file \"%s\" is not created because it would be empty.\r\n", new_archive_name);
 		return;
 	}
 

@@ -91,9 +91,7 @@ decode_start_dyn( /* void */ )
 
 /* ------------------------------------------------------------------------ */
 static void
-reconst(start, end)
-	int             start;
-	int             end;
+reconst(int start, int end)
 {
 	int             i, j, k, l, b;
 	unsigned int    f, g;

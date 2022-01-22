@@ -45,8 +45,7 @@ decode_start_st0( /*void*/ )
 
 /* ------------------------------------------------------------------------ */
 void
-encode_p_st0(j)
-	unsigned short  j;
+encode_p_st0(unsigned short j)
 {
 	unsigned short  i;
 
@@ -57,8 +56,7 @@ encode_p_st0(j)
 
 /* ------------------------------------------------------------------------ */
 static void
-ready_made(method)
-	int             method;
+ready_made(int method)
 {
 	int             i, j;
 	unsigned int    code, weight;

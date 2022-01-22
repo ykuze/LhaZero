@@ -27,16 +27,15 @@ static char	   *methods[] =
 
 /* functions declared */
 #if WIN32
-static Boolean inquire_extract P((char *name));
-static Boolean make_parent_path P((char *name));
+static _Boolean inquire_extract P((char *name));
+static _Boolean make_parent_path P((char *name));
 static FILE * open_with_make_path P((char *name));
 static void adjust_info P((char *name, LzHeader *hdr));
 static void extract_one P((FILE *afp, LzHeader *hdr));
 #endif /* WIN32 */
 /* ------------------------------------------------------------------------ */
-static          Boolean
-inquire_extract(name)
-	char           *name;
+static          _Boolean
+inquire_extract(char *name)
 {
 	struct stat     stbuf;
 
@@ -48,14 +47,14 @@ inquire_extract(name)
 		}
 
 		if (noexec) {
-			printf("EXTRACT %s but file is exist.\n", name);
+			printf("EXTRACT %s but file is exist.\r\n", name);
 			return FALSE;
 		}
 		else if (!force) {
 			if (!isatty(0))
 				return FALSE;
 
-			switch (inquire("OverWrite ?(Yes/[No]/All/Skip)", name, "YyNnAaSs\n")) {
+			switch (inquire("OverWrite ?(Yes/[No]/All/Skip)", name, "YyNnAaSs\r\n")) {
 			case 0:
 			case 1:/* Y/y */
 				break;
@@ -75,15 +74,14 @@ inquire_extract(name)
 		}
 	}
 	if (noexec)
-		printf("EXTRACT %s\n", name);
+		printf("EXTRACT %s\r\n", name);
 
 	return TRUE;
 }
 
 /* ------------------------------------------------------------------------ */
-static          Boolean
-make_parent_path(name)
-	char           *name;
+static          _Boolean
+make_parent_path(char *name)
 {
 	char            path[FILENAME_LENGTH];
 	struct stat     stbuf;
@@ -111,7 +109,7 @@ make_parent_path(name)
 	errno = 0;
 
 	if (verbose)
-		printf("Making directory \"%s\".\n", path);
+		printf("Making directory \"%s\".\r\n", path);
 
 #ifdef	WIN32
 	if (mkdir(path) >= 0)	/* try */
@@ -205,8 +203,9 @@ extract_one(afp, hdr)
 	char            name[257];
 	int             crc;
 	int             method;
-	Boolean         save_quiet, save_verbose, up_flag;
+	_Boolean         save_quiet, save_verbose, up_flag;
 	char           *q = hdr->name, c;
+	char            tmpbuf[BUFSIZ];
 
 	if (ignore_directory && rindex(hdr->name, '/')) {
 		q = (char *) rindex(hdr->name, '/') + 1;
@@ -262,7 +261,7 @@ extract_one(afp, hdr)
 		writting_filename = name;
 		if (output_to_stdout || verify_mode) {
 			if (noexec) {
-				printf("%s %s\n", verify_mode ? "VERIFY" : "EXTRACT", name);
+				printf("%s %s\r\n", verify_mode ? "VERIFY" : "EXTRACT", name);
 				if (afp == stdin) {
 					int             i = hdr->packed_size;
 					while (i--)
@@ -274,7 +273,7 @@ extract_one(afp, hdr)
 			save_quiet = quiet;
 			save_verbose = verbose;
 			if (!quiet && output_to_stdout) {
-				printf("::::::::\n%s\n::::::::\n", name);
+				printf("::::::::\r\n%s\r\n::::::::\r\n", name);
 				quiet = TRUE;
 				verbose = FALSE;
 			}
@@ -289,18 +288,22 @@ extract_one(afp, hdr)
 			verbose = save_verbose;
 		}
 		else {
+			strcpy(tmpbuf, base_directory);
+			strcat(tmpbuf, name);
 			if (skip_flg == FALSE)  {
-				up_flag = inquire_extract(name);
+				//up_flag = inquire_extract(name);
+				up_flag = inquire_extract(tmpbuf);
 				if (up_flag == FALSE && force == FALSE) {
 					return;
 				}
 			}
 
 			if (skip_flg == TRUE) {	/* if skip_flg */
-				if (stat(name, &stbuf) == 0 && force != TRUE) {
+				//if (stat(name, &stbuf) == 0 && force != TRUE) {
+				if (stat(tmpbuf, &stbuf) == 0 && force != TRUE) {
 					if (stbuf.st_mtime >= hdr->unix_last_modified_stamp) {
 						if (quiet != TRUE)
-							printf("%s : Skipped...\n", name);
+							printf("%s : Skipped...\r\n", name);
 						return;
 					}
 				}
@@ -317,11 +320,13 @@ extract_one(afp, hdr)
 			signal(SIGINT, interrupt);
 			signal(SIGHUP, interrupt);
 
-			unlink(name);
+			//unlink(name);
+			unlink(tmpbuf);
 			errno = 0;
 			remove_extracting_file_when_interrupt = TRUE;
 
-			if ((fp = open_with_make_path(name)) != NULL) {
+			//if ((fp = open_with_make_path(name)) != NULL) {
+			if ((fp = open_with_make_path(tmpbuf)) != NULL) {
 				crc = decode_lzhuf
 					(afp, fp, hdr->original_size, hdr->packed_size, name, method);
 				fclose(fp);
@@ -345,7 +350,7 @@ extract_one(afp, hdr)
 		if (!ignore_directory && !verify_mode) {
 			if (noexec) {
 				if (quiet != TRUE)
-					printf("EXTRACT %s (directory)\n", name);
+					printf("EXTRACT %s (directory)\r\n", name);
 				return;
 			}
 			/* NAME has trailing SLASH '/', (^_^) */
@@ -366,7 +371,7 @@ extract_one(afp, hdr)
 					if (GETSTAT(bb1, &stbuf) == 0 && force != TRUE) {
 						if (stbuf.st_mtime >= hdr->unix_last_modified_stamp) {
 							if (quiet != TRUE)
-								printf("%s : Skipped...\n", bb1);
+								printf("%s : Skipped...\r\n", bb1);
 							return;
 						}
 					}
@@ -379,7 +384,7 @@ extract_one(afp, hdr)
 						warning("Can't make Symbolic Link : ", "");
 				}
 				if (quiet != TRUE) {
-					printf("Symbolic Link %s -> %s\n", bb1, bb2);
+					printf("Symbolic Link %s -> %s\r\n", bb1, bb2);
 				}
 				strcpy(name, bb1);	/* Symbolic's name set */
 #else

@@ -65,6 +65,7 @@ static void     sort_files();
 static void		print_version();
 
 char		    *extract_directory = NULL;
+char		    *base_directory = NULL;
 char		  **xfilev;
 int             xfilec = 257;
 
@@ -85,9 +86,9 @@ static void print_version P((void));
 static void message_1 P((char *title, char *subject, char *name));
 static int sort_by_ascii P((const void *a, const void *b));
 static void sort_files P((void));
-static Boolean include_path_p P((char *path, char *name));
+static _Boolean include_path_p P((char *path, char *name));
 static void modify_filename_extention P((char *buffer, char *ext));
-static Boolean open_old_archive_1 P((char *name, FILE **v_fp));
+static _Boolean open_old_archive_1 P((char *name, FILE **v_fp));
 #endif /* WIN32 */
 /* ------------------------------------------------------------------------ */
 static void
@@ -151,43 +152,43 @@ static void
 print_tiny_usage_and_exit()
 {
 	fprintf(stderr, "\
-LHarc    for UNIX  V 1.02  Copyright(C) 1989  Y.Tagawa\n\
-LHx      for MSDOS V C2.01 Copyright(C) 1990  H.Yoshizaki\n\
-LHx(arc) for OSK   V 2.01  Modified     1990  Momozou\n\
-LHa      for UNIX  V 1.00  Copyright(C) 1992  Masaru Oki\n\
-LHa      for UNIX  V 1.14  Modified     1995  Nobutaka Watazaki\n\
-LHa      for UNIX  V 1.14i Modified     2000  Tsugio Okamoto\n\
+LHarc    for UNIX  V 1.02  Copyright(C) 1989  Y.Tagawa\r\n\
+LHx      for MSDOS V C2.01 Copyright(C) 1990  H.Yoshizaki\r\n\
+LHx(arc) for OSK   V 2.01  Modified     1990  Momozou\r\n\
+LHa      for UNIX  V 1.00  Copyright(C) 1992  Masaru Oki\r\n\
+LHa      for UNIX  V 1.14  Modified     1995  Nobutaka Watazaki\r\n\
+LHa      for UNIX  V 1.14i Modified     2000  Tsugio Okamoto\r\n\
 ");
 	fprintf(stderr, "\
-usage: lha [-]{axelvudmcp[q[num]][vnfodizg012]}[w=<dir>] archive_file [file...]\n\
-commands:                           options:\n\
- a   Add(or replace) to archive      q{num} quiet (num:quiet mode)\n\
- x,e EXtract from archive            v  verbose\n\
- l,v List / Verbose List             n  not execute\n\
- u   Update newer files to archive   f  force (over write at extract)\n\
- d   Delete from archive             t  FILES are TEXT file\n");
+usage: lha [-]{axelvudmcp[q[num]][vnfodizg012]}[w=<dir>] archive_file [file...]\r\n\
+commands:                           options:\r\n\
+ a   Add(or replace) to archive      q{num} quiet (num:quiet mode)\r\n\
+ x,e EXtract from archive            v  verbose\r\n\
+ l,v List / Verbose List             n  not execute\r\n\
+ u   Update newer files to archive   f  force (over write at extract)\r\n\
+ d   Delete from archive             t  FILES are TEXT file\r\n");
 #ifdef SUPPORT_LH7
 	fprintf(stderr, "\
- m   Move to archive (means 'ad')    o[567] compression method (a/u)\n\
+ m   Move to archive (means 'ad')    o[567] compression method (a/u)\r\n\
 ");
 #endif
 #ifndef SUPPORT_LH7
 	fprintf(stderr, "\
- m   Move to archive (means 'ad')    o  use LHarc compatible method (a/u)\n\
+ m   Move to archive (means 'ad')    o  use LHarc compatible method (a/u)\r\n\
 ");
 #endif
 	fprintf(stderr, "\
- c   re-Construct new archive        w=<dir> specify extract directory (a/u/m/x/e)\n\
- p   Print to STDOUT from archive    d  delete FILES after (a/u/c)\n\
- t   Test file CRC in archive        i  ignore directory path (x/e)\n\
-                                     z  files not compress (a/u)\n\
-                                     g  Generic format (for compatibility)\n\
-                                        or not convert case when extracting\n\
-                                     0/1/2 header level (a/u)\n\
+ c   re-Construct new archive        w=<dir> specify extract directory (a/u/m/x/e)\r\n\
+ p   Print to STDOUT from archive    d  delete FILES after (a/u/c)\r\n\
+ t   Test file CRC in archive        i  ignore directory path (x/e)\r\n\
+                                     z  files not compress (a/u)\r\n\
+                                     g  Generic format (for compatibility)\r\n\
+                                        or not convert case when extracting\r\n\
+                                     0/1/2 header level (a/u)\r\n\
 ");
 #ifdef EUC
 	fprintf(stderr, "\
-                                     e  TEXT code convert from/to EUC\n\
+                                     e  TEXT code convert from/to EUC\r\n\
 ");
 #endif
 	exit(1);
@@ -195,9 +196,7 @@ commands:                           options:\n\
 
 /* ------------------------------------------------------------------------ */
 int
-main(argc, argv)
-	int             argc;
-	char           *argv[];
+main(int argc, char *argv[])
 {
 	char           *p, inpbuf[256];
 
@@ -209,10 +208,10 @@ main(argc, argv)
 
 	ac = argc;
 	av = (char **)malloc( sizeof(char*)*argc );
-	if (av == NULL) fatal_error("not enough memory\n");
+	if (av == NULL) fatal_error("not enough memory\r\n");
 	for (i=0; i<argc; i++) {
 	  if ((av[i] = strdup( argv[i] )) == NULL)
-		fatal_error("not enough memory\n");
+		fatal_error("not enough memory\r\n");
 	}
 
 	if (ac < 2)
@@ -355,7 +354,7 @@ main(argc, argv)
 				break;
 #endif
 			default:
-				fprintf(stderr, "LHa: error option o%c\n", p[-1]);
+				fprintf(stderr, "LHa: error option o%c\r\n", p[-1]);
 				exit(1);
 			}
 			break;
@@ -382,7 +381,7 @@ main(argc, argv)
 			header_level = HEADER_LEVEL2;
 			break;
 		default:
-			fprintf(stderr, "LHa: Unknown option '%c'.\n", p[-1]);
+			fprintf(stderr, "LHa: Unknown option '%c'.\r\n", p[-1]);
 			exit(1);
 		}
 	}
@@ -401,7 +400,7 @@ work:
 #if !unix
 			p = (char *)malloc(strlen(archive_name) + 5);
 			if (p == NULL)
-				fatal_error("Virtual memory exhausted\n");
+				fatal_error("Virtual memory exhausted\r\n");
 			strcpy(p, archive_name);
 			archive_name = p;
 			modify_filename_extention (archive_name, ARCHIVENAME_EXTENTION); /* ".lzh" */
@@ -413,7 +412,7 @@ work:
 	if (get_filename_from_stdin) {
 		cmd_filec = 0;
 		if ((xfilev = (char **) malloc(sizeof(char *) * xfilec)) == NULL)
-			fatal_error("Virtual memory exhausted\n");
+			fatal_error("Virtual memory exhausted\r\n");
 		while (fgets(inpbuf, sizeof(inpbuf), stdin)) {
 		    /* delete \n if it exist */
 			i=0; p=inpbuf;
@@ -430,13 +429,13 @@ work:
 				cmd_filev = (char **) realloc(xfilev,
 						   sizeof(char *) * xfilec);
 				if (cmd_filev == NULL)
-					fatal_error("Virtual memory exhausted\n");
+					fatal_error("Virtual memory exhausted\r\n");
 				xfilev = cmd_filev;
 			}
 			if (strlen(inpbuf) < 1)
 				continue;
 			if ((xfilev[cmd_filec++] = (char *) strdup(inpbuf)) == NULL)
-				fatal_error("Virtual memory exhausted\n");
+				fatal_error("Virtual memory exhausted\r\n");
 		}
 		xfilev[cmd_filec] = NULL;
 		cmd_filev = xfilev;
@@ -481,51 +480,46 @@ work:
 static void
 print_version()
 {
-	fprintf(stderr, "%s\n", LHA_VERSION);
+	fprintf(stderr, "%s\r\n", LHA_VERSION);
 }
 
 /* ------------------------------------------------------------------------ */
 static void
-message_1(title, subject, name)
-	char           *title, *subject, *name;
+message_1(char *title, char *subject, char *name)
 {
 	fprintf(stderr, "LHa: %s%s ", title, subject);
 	fflush(stderr);
 
 	if (errno == 0)
-		fprintf(stderr, "%s\n", name);
+		fprintf(stderr, "%s\r\n", name);
 	else
 		perror(name);
 }
 
 /* ------------------------------------------------------------------------ */
 void
-message(subject, name)
-	char           *subject, *name;
+message(char *subject, char *name)
 {
 	message_1("", subject, name);
 }
 
 /* ------------------------------------------------------------------------ */
 void
-warning(subject, name)
-	char           *subject, *name;
+warning(char *subject, char *name)
 {
 	message_1("Warning: ", subject, name);
 }
 
 /* ------------------------------------------------------------------------ */
 void
-error(subject, msg)
-	char           *subject, *msg;
+error(char *subject, char *msg)
 {
 	message_1("Error: ", subject, msg);
 }
 
 /* ------------------------------------------------------------------------ */
 void
-fatal_error(msg)
-	char           *msg;
+fatal_error(char *msg)
 {
 	message_1("Fatal error:", "", msg);
 
@@ -551,11 +545,10 @@ read_error()
 
 /* ------------------------------------------------------------------------ */
 void
-interrupt(signo)
-	int             signo;
+interrupt(int signo)
 {
 	errno = 0;
-	message("Interrupted\n", "");
+	message("Interrupted\r\n", "");
 
 	if (temporary_fp)
 		fclose(temporary_fp);
@@ -578,12 +571,10 @@ interrupt(signo)
 /*																			*/
 /* ------------------------------------------------------------------------ */
 static int
-sort_by_ascii(a, b)
 #if __STDC__
-    const void *a;
-    const void *b;
+sort_by_ascii(const void *a, const void *b)
 #else
-	char          **a, **b;
+sort_by_ascii(char  **a, char **b)
 #endif
 {
 	register char  *p, *q;
@@ -728,7 +719,7 @@ free_sp(vector)
 /* ------------------------------------------------------------------------ */
 /*							READ DIRECTORY FILES							*/
 /* ------------------------------------------------------------------------ */
-static          Boolean
+static          _Boolean
 include_path_p(path, name)
 	char           *path, *name;
 {
@@ -767,7 +758,7 @@ cleaning_files(v_filec, v_filev)
 		if (GETSTAT(filev[i], &stbuf) < 0) {
 			flags[i] = 0x04;
 			fprintf(stderr,
-			 "LHa: Cannot access \"%s\", ignored.\n", filev[i]);
+			 "LHa: Cannot access \"%s\", ignored.\r\n", filev[i]);
 		}
 		else {
 			if (is_regularfile(&stbuf))
@@ -781,7 +772,7 @@ cleaning_files(v_filec, v_filev)
 			else {
 				flags[i] = 0x04;
 				fprintf(stderr,
-					"LHa: Cannot archive \"%s\", ignored.\n", filev[i]);
+					"LHa: Cannot archive \"%s\", ignored.\r\n", filev[i]);
 			}
 		}
 	errno = 0;
@@ -830,7 +821,7 @@ cleaning_files(v_filec, v_filev)
 /* ------------------------------------------------------------------------ */
 #ifdef NODIRECTORY
 /* please need your imprementation */
-Boolean
+_Boolean
 find_files(name, v_filec, v_filev)
 	char           *name;
 	int            *v_filec;
@@ -849,7 +840,7 @@ free_files(filec, filev)
 }
 /* ------------------------------------------------------------------------ */
 #else
-Boolean
+_Boolean
 find_files(name, v_filec, v_filev)
 	char           *name;
 	int            *v_filec;
@@ -1003,7 +994,7 @@ build_standard_archive_name(buffer, orginal)
 /* ------------------------------------------------------------------------ */
 /*																			*/
 /* ------------------------------------------------------------------------ */
-Boolean
+_Boolean
 need_file(name)
 	char           *name;
 {
@@ -1035,7 +1026,7 @@ xfopen(name, mode)
 /* ------------------------------------------------------------------------ */
 /*																			*/
 /* ------------------------------------------------------------------------ */
-static          Boolean
+static          _Boolean
 open_old_archive_1(name, v_fp)
 	char           *name;
 	FILE          **v_fp;

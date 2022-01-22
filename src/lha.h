@@ -50,6 +50,8 @@
 #endif
 #define interface interface_
 #define child	_child_
+
+#include "msgout.h"			// kuze
 #endif /* __BORLANDC__ */
 
 #ifdef _MSC_VER
@@ -114,7 +116,7 @@ typedef struct LzHeader {
 	unsigned char   header_level;
 	char            name[256];
 	unsigned short  crc;
-	Boolean         has_crc;
+	_Boolean         has_crc;
 	unsigned char   extend_type;
 	unsigned char   minor_version;
 
@@ -139,37 +141,37 @@ struct interfacing {
 /*	Option switch variable													*/
 /* ------------------------------------------------------------------------ */
 /* command line options (common options) */
-EXTERN Boolean  quiet;
-EXTERN Boolean  text_mode;
-EXTERN Boolean  verbose;
-EXTERN Boolean  noexec;		/* debugging option */
-EXTERN Boolean  force;
-EXTERN Boolean  prof;
-EXTERN Boolean  delete_after_append;
+EXTERN _Boolean  quiet;
+EXTERN _Boolean  text_mode;
+EXTERN _Boolean  verbose;
+EXTERN _Boolean  noexec;		/* debugging option */
+EXTERN _Boolean  force;
+EXTERN _Boolean  prof;
+EXTERN _Boolean  delete_after_append;
 EXTERN int		compress_method;
 EXTERN int		header_level;
 /* EXTERN int		quiet_mode; */   /* 1996.8.13 t.okamoto */
 #ifdef EUC
-EXTERN Boolean	euc_mode;
+EXTERN _Boolean	euc_mode;
 #endif
 
 /* list command flags */
-EXTERN Boolean  verbose_listing;
+EXTERN _Boolean  verbose_listing;
 
 /* extract/print command flags */
-EXTERN Boolean  output_to_stdout;
+EXTERN _Boolean  output_to_stdout;
 
 /* add/update/delete command flags */
-EXTERN Boolean  new_archive;
-EXTERN Boolean  update_if_newer;
-EXTERN Boolean  generic_format;
+EXTERN _Boolean  new_archive;
+EXTERN _Boolean  update_if_newer;
+EXTERN _Boolean  generic_format;
 
-EXTERN Boolean	remove_temporary_at_error;
-EXTERN Boolean	recover_archive_when_interrupt;
-EXTERN Boolean	remove_extracting_file_when_interrupt;
-EXTERN Boolean	get_filename_from_stdin;
-EXTERN Boolean	ignore_directory;
-EXTERN Boolean	verify_mode;
+EXTERN _Boolean	remove_temporary_at_error;
+EXTERN _Boolean	recover_archive_when_interrupt;
+EXTERN _Boolean	remove_extracting_file_when_interrupt;
+EXTERN _Boolean	get_filename_from_stdin;
+EXTERN _Boolean	ignore_directory;
+EXTERN _Boolean	verify_mode;
 
 /* Indicator flag */
 EXTERN int		quiet_mode;
@@ -189,9 +191,9 @@ EXTERN char		*reading_filename, *writting_filename;
 
 /* 1996.8.13 t.okamoto */
 #if 0
-EXTERN boolean  remove_temporary_at_error;
-EXTERN boolean  recover_archive_when_interrupt;
-EXTERN boolean  remove_extracting_file_when_interrupt;
+EXTERN _Boolean  remove_temporary_at_error;
+EXTERN _Boolean  recover_archive_when_interrupt;
+EXTERN _Boolean  remove_extracting_file_when_interrupt;
 #endif
 
 EXTERN int      archive_file_mode;
@@ -243,11 +245,16 @@ EXTERN FILE		*temporary_fp;
 /*	Functions																*/
 /* ------------------------------------------------------------------------ */
 /* from lharc.c */
-extern Boolean	ignore_directory;
-extern Boolean	compress_method;
-extern Boolean	verify_mode;
+extern _Boolean	ignore_directory;
+extern _Boolean	compress_method;
+extern _Boolean	verify_mode;
 
 extern char		*extract_directory;
+extern char		*base_directory;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* from lharc.c */
 extern int main P((int argc, char *argv[]));
@@ -265,14 +272,14 @@ extern void add_sp P((struct string_pool *sp, char *name, int len));
 extern void finish_sp P((register struct string_pool *sp, int *v_count, char ***v_vector));
 extern void free_sp P((char **vector));
 extern void cleaning_files P((int *v_filec, char ***v_filev));
-extern Boolean find_files P((char *name, int *v_filec, char ***v_filev));
+extern _Boolean find_files P((char *name, int *v_filec, char ***v_filev));
 extern void free_files P((int filec, char **filev));
-extern Boolean find_files P((char *name, int *v_filec, char ***v_filev));
+extern _Boolean find_files P((char *name, int *v_filec, char ***v_filev));
 extern void free_files P((int filec, char **filev));
 extern void build_temporary_name P((void));
 extern void build_backup_name P((char *buffer, char *original));
 extern void build_standard_archive_name P((char *buffer, char *orginal));
-extern Boolean need_file P((char *name));
+extern _Boolean need_file P((char *name));
 extern FILE *xfopen P((char *name, char *mode));
 extern FILE *open_old_archive P((void));
 extern int inquire P((char *msg, char *name, char *selective));
@@ -325,7 +332,7 @@ extern int decode_lzhuf P((FILE *infp, FILE *outfp, long original_size,
 
 /* header.c */
 extern int calc_sum P((register char *p, register int len));
-extern Boolean get_header P((FILE *fp, register LzHeader *hdr));
+extern _Boolean get_header P((FILE *fp, register LzHeader *hdr));
 extern void init_header P((char *name, struct stat *v_stat, LzHeader *hdr));
 extern void write_header P((FILE *nafp, LzHeader *hdr));
 
@@ -386,8 +393,8 @@ extern long copyfile P((FILE *f1, FILE *f2, long size, int crc_flg));
 extern int encode_stored_crc P((FILE *ifp, FILE *ofp, long size,
 	long *original_size_var, long *write_size_var));
 extern unsigned char *convdelim P((unsigned char *path, unsigned char delim));
-extern Boolean archive_is_msdos_sfx1 P((char *name));
-extern Boolean skip_msdos_sfx1_code P((FILE *fp));
+extern _Boolean archive_is_msdos_sfx1 P((char *name));
+extern _Boolean skip_msdos_sfx1_code P((FILE *fp));
 #ifdef NOSTRDUP
 extern char *strdup P((char *buf));
 #endif
@@ -408,9 +415,13 @@ extern int strucmp P((register char *s, register char *t));
 extern char *memset P((char *s, int c, int n));
 #endif
 
-#if __BORLANDC__
-char *strdup P((char *));
-#endif /* __BORLANDC__ */
+//#if __BORLANDC__
+//char *strdup P((char *));
+//#endif /* __BORLANDC__ */
+
+#ifdef __cplusplus
+}
+#endif
 
 /* Local Variables: */
 /* mode:c */

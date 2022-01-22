@@ -120,8 +120,7 @@ static unsigned int remainder;
 
 /* ------------------------------------------------------------------------ */
 int
-encode_alloc(method)
-	int             method;
+encode_alloc(int method)
 {
 	if (method == LZHUFF1_METHOD_NUM) {	/* Changed N.Watazaki */
 		encode_set = encode_define[0];
@@ -259,7 +258,7 @@ static void match_insert()
 #ifdef DEBUG
 					if (noslide) {
 					  if (matchpos < dicsiz) {
-						printf("matchpos=%u scan_pos=%u dicsiz=%u\n"
+						printf("matchpos=%u scan_pos=%u dicsiz=%u\r\n"
 							   ,matchpos, scan_pos, dicsiz);
 					  }
 					}
@@ -297,8 +296,7 @@ static void get_next()
 	hval = ((hval << 5) ^ text[pos + 2]) & (unsigned)(HSHSIZ - 1);
 }
 
-void encode(interface)
-struct interfacing *interface;
+void encode(struct interfacing *interface)
 {
 	int lastmatchlen;
 	unsigned int lastmatchoffset;
@@ -342,7 +340,7 @@ struct interfacing *interface;
 		if (matchlen > lastmatchlen || lastmatchlen < THRESHOLD) {
 			encode_set.output(text[pos - 1], 0);
 #ifdef DEBUG
-			fprintf(fout, "%u C %02X\n", addr, text[pos-1]);
+			fprintf(fout, "%u C %02X\r\n", addr, text[pos-1]);
 			addr++;
 #endif
 			count++;
@@ -362,7 +360,7 @@ struct interfacing *interface;
 			  cc = text[(pos-(lastmatchoffset)) & (dicsiz-1)];
 			  fprintf(fout, "%02X ", cc);
 			}
-			fprintf(fout, "\n");
+			fprintf(fout, "\r\n");
 			}
 #endif
 			while (--lastmatchlen > 0) {
@@ -420,7 +418,7 @@ decode(interface)
 		c = decode_set.decode_c();
 		if (c <= UCHAR_MAX) {
 #ifdef DEBUG
-		  fprintf(fout, "%u C %02X\n", count, c);
+		  fprintf(fout, "%u C %02X\r\n", count, c);
 #endif
 			dtext[loc++] = c;
 			if (loc == dicsiz) {
@@ -449,7 +447,7 @@ decode(interface)
 				}
 			}
 #ifdef DEBUG
-			fprintf(fout, "\n");
+			fprintf(fout, "\r\n");
 #endif
 		}
 	}

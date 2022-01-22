@@ -125,7 +125,7 @@ generic_to_unix_filename(name, len)
 	register int    len;
 {
 	register int    i;
-	Boolean         lower_case_used = FALSE;
+	_Boolean         lower_case_used = FALSE;
 
 #ifdef MULTIBYTE_CHAR
 	for (i = 0; i < len; i++) {
@@ -417,7 +417,7 @@ unix_to_generic_stamp(t)
 /* ------------------------------------------------------------------------ */
 /* build header functions													*/
 /* ------------------------------------------------------------------------ */
-Boolean
+_Boolean
 get_header(fp, hdr)
 	FILE           *fp;
 	register LzHeader *hdr;

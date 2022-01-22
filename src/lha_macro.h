@@ -73,11 +73,11 @@ extern char    *realloc();
 #endif
 
 /* external variables */
-extern int      errno;
+//extern int      errno;
 
 #define	FALSE			0
 #define TRUE			1
-typedef int				Boolean;
+typedef int				_Boolean;
 
 /* used by qsort() for alphabetic-sort */
 #define STRING_COMPARE(a,b)		strcmp((a),(b))

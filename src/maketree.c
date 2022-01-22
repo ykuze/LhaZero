@@ -22,10 +22,7 @@ static void downheap P((int i));
 #endif /* WIN32 */
 /* ------------------------------------------------------------------------ */
 void
-make_code(n, len, code)
-	int             n;
-	unsigned char   len[];
-	unsigned short  code[];
+make_code(int n, unsigned char len[], unsigned short code[])
 {
 	unsigned short  weight[17];	/* 0x10000ul >> bitlen */
 	unsigned short  start[17];	/* start code */
@@ -48,8 +45,7 @@ make_code(n, len, code)
 
 /* ------------------------------------------------------------------------ */
 static void
-count_len(i)			/* call with i = root */
-	int             i;
+count_len(int i)			/* call with i = root */
 {
 	static unsigned char depth = 0;
 
@@ -65,8 +61,7 @@ count_len(i)			/* call with i = root */
 
 /* ------------------------------------------------------------------------ */
 static void
-make_len(root)
-	int             root;
+make_len(int root)
 {
 	int             i, k;
 	unsigned int    cum;
@@ -107,9 +102,8 @@ make_len(root)
 
 /* ------------------------------------------------------------------------ */
 static void
-downheap(i)
+downheap(int i)
 /* priority queue; send i-th entry down heap */
-	int             i;
 {
 	short           j, k;
 
@@ -127,12 +121,8 @@ downheap(i)
 
 /* ------------------------------------------------------------------------ */
 short
-make_tree(nparm, freqparm, lenparm, codeparm)
+make_tree(int nparm, unsigned short freqparm[], unsigned char lenparm[], unsigned short codeparm[])
 /* make tree, calculate len[], return root */
-	int             nparm;
-	unsigned short  freqparm[];
-	unsigned char   lenparm[];
-	unsigned short  codeparm[];
 {
 	short           i, j, k, avail;
 

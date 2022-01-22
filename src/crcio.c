@@ -116,7 +116,7 @@ putcode(n, x)			/* Write rightmost n bits of x */
 		if (compsize < origsize) {
 			if (fwrite(&subbitbuf, 1, 1, outfile) == 0) {
 				/* fileerror(WTERR, outfile); */
-			    fatal_error("Write error in crcio.c(putcode)\n");
+			    fatal_error("Write error in crcio.c(putcode)\r\n");
 				/* exit(errno); */
 			}
 			compsize++;
@@ -144,7 +144,7 @@ putbits(n, x)			/* Write rightmost n bits of x */
 		if (compsize < origsize) {
 			if (fwrite(&subbitbuf, 1, 1, outfile) == 0) {
 				/* fileerror(WTERR, outfile); */
-			    fatal_error("Write error in crcio.c(putbits)\n");
+			    fatal_error("Write error in crcio.c(putbits)\r\n");
 				/* exit(errno); */
 			}
 			compsize++;
@@ -188,11 +188,11 @@ fwrite_crc(p, n, fp)
 	if (fp) {
 		if (text_mode) {
 			if (fwrite_txt(p, n, fp))
-				fatal_error("File write error\n");
+				fatal_error("File write error\r\n");
 		}
 		else {
 			if (fwrite(p, 1, n, fp) < n)
-				fatal_error("File write error\n");
+				fatal_error("File write error\r\n");
 		}
 	}
 }
