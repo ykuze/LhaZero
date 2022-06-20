@@ -462,6 +462,7 @@ int WINAPI LhaZeroGetFileName(HARC _harc, LPSTR _lpBuffer, const int	_nSize)
 BOOL WINAPI LhaZeroGetWriteTimeEx(HARC _harc, FILETIME *_lpftLastWriteTime)
 {
 	WORD Date, Time;
+	FILETIME LocalFileTime;
 
 #ifdef _DEBUG
 	LogSl->Add("LhaZeroGetWriteTimeEx()");
@@ -471,7 +472,8 @@ BOOL WINAPI LhaZeroGetWriteTimeEx(HARC _harc, FILETIME *_lpftLastWriteTime)
 
 	Date = (WORD)(hdr.last_modified_stamp >> 16);
 	Time = (WORD)(hdr.last_modified_stamp & 0x0000FFFF);
-	DosDateTimeToFileTime(Date, Time, _lpftLastWriteTime);
+	DosDateTimeToFileTime(Date, Time, &LocalFileTime);
+	LocalFileTimeToFileTime(&LocalFileTime, _lpftLastWriteTime);	// ローカルの日時をGMT(グリニッジ標準時)/UTC(協定世界時)に変換
 #ifdef _DEBUG
 	LogSl->Add("  DTtoFDate  ="+IntToHex((Int8)_lpftLastWriteTime, 8));
 	LogSl->SaveToFile(DBGLOG);
