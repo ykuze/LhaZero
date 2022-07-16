@@ -4,8 +4,12 @@
 #define LhaZeroMainH
 //---------------------------------------------------------------------------
 
-#define VERSION         1       // 0.01
+#define VERSION         3       // 0.03
 #define FNAME_MAX32		512
+
+#ifndef _MINWINDEF_
+#include "minwindef.h"
+#endif
 
 #ifndef FA_RDONLY
 /* Attribute */
@@ -188,5 +192,6 @@ LhaZeroGetAttribute(
 #endif
 
 void clear_arclist(void);
+void TimetToFileTime(time_t t, LPFILETIME pft);
 
 

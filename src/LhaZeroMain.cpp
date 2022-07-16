@@ -140,6 +140,23 @@ void clear_arclist(void)
 	}
 }
 
+void TimetToFileTime(time_t t, LPFILETIME pft)
+{
+    ULARGE_INTEGER time_value;
+    time_value.QuadPart = (t * 10000000LL) + 116444736000000000LL;
+    pft->dwLowDateTime = time_value.LowPart;
+    pft->dwHighDateTime = time_value.HighPart;
+}
+
+/*
+void TimetToFileTime(time_t t, LPFILETIME pft)
+{
+	LONGLONG time_value = Int32x32To64(t, 10000000) + 116444736000000000;
+	pft->dwLowDateTime = (DWORD) time_value;
+	pft->dwHighDateTime = time_value >> 32;
+}
+*/
+
 //-----------------------------------------------------------------
 /*
   対応コマンド
@@ -361,6 +378,8 @@ int WINAPI LhaZeroCloseArchive(HARC	_harc)
 int WINAPI GetIvInfo(HARC _harc, PINDIVIDUALINFO _lpSubInfo)
 {
 	FILE            *afp;
+	time_t          tm;
+	FILETIME        ftime;
 
 #ifdef _DEBUG
 	LogSl->Add("  GetIvInfo("+IntToStr((int)_harc)+")");
@@ -379,8 +398,8 @@ int WINAPI GetIvInfo(HARC _harc, PINDIVIDUALINFO _lpSubInfo)
 			_lpSubInfo->wRatio       = hdr.packed_size * 1000 / hdr.original_size;
 		else
 			_lpSubInfo->wRatio       = 0;
-		_lpSubInfo->wDate            = (WORD)(hdr.last_modified_stamp >> 16);
-		_lpSubInfo->wTime            = (WORD)(hdr.last_modified_stamp & 0x0000FFFF);
+		TimetToFileTime(hdr.unix_last_modified_stamp, &ftime);
+		FileTimeToDosDateTime(&ftime, &_lpSubInfo->wDate, &_lpSubInfo->wTime);
 		strcpy(_lpSubInfo->szFileName, hdr.name);
 		if (hdr.attribute & FA_RDONLY) _lpSubInfo->szAttribute[0] = 'R';  else _lpSubInfo->szAttribute[0] = '-';
 		if (hdr.attribute & FA_HIDDEN) _lpSubInfo->szAttribute[1] = 'H';  else _lpSubInfo->szAttribute[1] = '-';
@@ -461,7 +480,6 @@ int WINAPI LhaZeroGetFileName(HARC _harc, LPSTR _lpBuffer, const int	_nSize)
 
 BOOL WINAPI LhaZeroGetWriteTimeEx(HARC _harc, FILETIME *_lpftLastWriteTime)
 {
-	WORD Date, Time;
 	FILETIME LocalFileTime;
 
 #ifdef _DEBUG
@@ -470,12 +488,11 @@ BOOL WINAPI LhaZeroGetWriteTimeEx(HARC _harc, FILETIME *_lpftLastWriteTime)
 #endif
 	if (_harc!=FHarc)  return ERROR_HARC_ISNOT_OPENED;
 
-	Date = (WORD)(hdr.last_modified_stamp >> 16);
-	Time = (WORD)(hdr.last_modified_stamp & 0x0000FFFF);
-	DosDateTimeToFileTime(Date, Time, &LocalFileTime);
-	LocalFileTimeToFileTime(&LocalFileTime, _lpftLastWriteTime);	// ローカルの日時をGMT(グリニッジ標準時)/UTC(協定世界時)に変換
+	TimetToFileTime(hdr.unix_last_modified_stamp, _lpftLastWriteTime);
 #ifdef _DEBUG
-	LogSl->Add("  DTtoFDate  ="+IntToHex((Int8)_lpftLastWriteTime, 8));
+	LogSl->Add("  last_modified_stamp  ="+IntToHex((Int8)hdr.last_modified_stamp, 4));
+	LogSl->Add("  unix_last_modified_stamp  ="+IntToHex((Int8)hdr.unix_last_modified_stamp, 8));
+	LogSl->Add("  DTtoFDate  ="+IntToHex(*(Int8*)_lpftLastWriteTime, 8));
 	LogSl->SaveToFile(DBGLOG);
 #endif
 
