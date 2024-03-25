@@ -73,6 +73,7 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
 
 		//----------------------------------------------------
 
+#if 0
 		//リソースからVCLスタイルの情報を取得してセット
 		if (FindResourceW(HInstance, L"CharcoalDark", L"VCLSTYLE") != 0) {
 #ifdef _DEBUG
@@ -98,6 +99,7 @@ int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved
 		LogSl->SaveToFile(DBGLOG);
 #endif
 */
+#endif
 
 		break;
 

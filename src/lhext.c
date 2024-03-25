@@ -206,6 +206,7 @@ extract_one(afp, hdr)
 	_Boolean         save_quiet, save_verbose, up_flag;
 	char           *q = hdr->name, c;
 	char            tmpbuf[BUFSIZ];
+	register char  *p;
 
 	if (ignore_directory && rindex(hdr->name, '/')) {
 		q = (char *) rindex(hdr->name, '/') + 1;
@@ -289,7 +290,15 @@ extract_one(afp, hdr)
 		}
 		else {
 			strcpy(tmpbuf, base_directory);
-			strcat(tmpbuf, name);
+			if (is_no_dir) {			// e ‚Ì‚Æ‚«
+				for (p = name + strlen(name); p > name; p--)
+					if (p[-1] == '/') {
+						break;
+					}
+				strcat(tmpbuf, p);
+			}
+			else
+				strcat(tmpbuf, name);
 			if (skip_flg == FALSE)  {
 				//up_flag = inquire_extract(name);
 				up_flag = inquire_extract(tmpbuf);

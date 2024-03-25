@@ -251,6 +251,7 @@ extern _Boolean	verify_mode;
 
 extern char		*extract_directory;
 extern char		*base_directory;
+extern _Boolean	is_no_dir;
 
 #ifdef __cplusplus
 extern "C" {

@@ -66,6 +66,7 @@ static void		print_version();
 
 char		    *extract_directory = NULL;
 char		    *base_directory = NULL;
+_Boolean	    is_no_dir = 0;			// eで解凍時 1
 char		  **xfilev;
 int             xfilec = 257;
 
@@ -137,6 +138,7 @@ init_variable()		/* Added N.Watazaki */
 	noconvertcase							= FALSE;
 
 	extract_directory = NULL;
+	is_no_dir = FALSE;
 	xfilec = 257;
 }
 
@@ -194,6 +196,18 @@ commands:                           options:\r\n\
 	exit(1);
 }
 
+// kuze
+char *strdup2(char *buf)
+{
+	char           *p;
+
+	if ((p = (char *) malloc(strlen(buf) + 1)) == NULL)
+		return NULL;
+	strcpy(p, buf);
+	return p;
+}
+#define strdup  strdup2         // kuze
+
 /* ------------------------------------------------------------------------ */
 int
 main(int argc, char *argv[])
@@ -235,8 +249,9 @@ main(int argc, char *argv[])
 		m++;
 	/* commands */
 	switch (*m) {
-	case 'x':
 	case 'e':
+		is_no_dir = TRUE;
+	case 'x':
 		cmd = CMD_EXTRACT;
 		break;
 
@@ -414,11 +429,11 @@ work:
 		if ((xfilev = (char **) malloc(sizeof(char *) * xfilec)) == NULL)
 			fatal_error("Virtual memory exhausted\r\n");
 		while (fgets(inpbuf, sizeof(inpbuf), stdin)) {
-		    /* delete \n if it exist */
+			/* delete \n if it exist */
 			i=0; p=inpbuf;
 			while (i < sizeof(inpbuf) && p != 0) {
-			    if (*p == '\n') {
-				    *p = 0;
+				if (*p == '\n') {
+					*p = 0;
 					break;
 				}
 				p++; i++;

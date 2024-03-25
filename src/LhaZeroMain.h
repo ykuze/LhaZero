@@ -4,7 +4,7 @@
 #define LhaZeroMainH
 //---------------------------------------------------------------------------
 
-#define VERSION         3       // 0.03
+#define VERSION         6       // 0.06
 #define FNAME_MAX32		512
 
 #ifndef _MINWINDEF_

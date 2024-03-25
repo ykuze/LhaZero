@@ -17,7 +17,8 @@ int mprintf(const char *fmt)
 	LogSl->Add(String(fmt));
 	LogSl->SaveToFile(DBGLOG);
 #endif
-	MsgForm->MsgMemo->SelText = String(fmt);
-	Application->ProcessMessages();
+	//MsgForm->MsgMemo->SelText = String(fmt);
+	MsgForm->msg(String(fmt));
+	//Application->ProcessMessages();
 }
 
